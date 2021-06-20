@@ -155,8 +155,15 @@ class textgenrnn:
             texts = [text_to_word_sequence(text, filters='') for text in texts]
 
         # calculate all combinations of text indices + token indices
-        indices_list = [np.meshgrid(np.array(i), np.arange(
-            len(text) + 1)) for i, text in enumerate(texts)]
+        #fix from https://github.com/minimaxir/textgenrnn/issues/209
+        indices_list = []
+        for i, t in enumerate(texts):
+            if i % 100 == 0:
+                print(i, '/', len(texts))
+            for c in range(len(t) + 1):
+                indices_list.append([i, c])
+
+        indices_list = np.array(indices_list)
         # indices_list = np.block(indices_list) # this hangs when indices_list is large enough
         # FIX BEGIN ------
         indices_list_o = np.block(indices_list[0])
